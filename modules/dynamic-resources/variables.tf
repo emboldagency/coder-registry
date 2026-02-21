@@ -35,3 +35,9 @@ variable "reserved_container_names" {
   type        = list(string)
   default     = []
 }
+
+variable "parameter_order" {
+  description = "Order for Coder parameters in this module. This module can create a maximum of 34 parameters, so choose an order that leaves room for your other parameters."
+  type        = number
+  default     = 0
+}

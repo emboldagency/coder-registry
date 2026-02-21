@@ -14,6 +14,7 @@ data "coder_parameter" "timezone" {
   type        = "string"
   default     = "America/New_York"
   mutable     = true
+  order       = var.parameter_order
   option {
     name  = "UTC"
     value = "UTC"

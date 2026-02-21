@@ -12,11 +12,7 @@ terraform {
   }
 }
 
-variable "order" {
-  description = "Order for Coder parameters in this module. This module can create a maximum of 34 parameters, so choose an order that leaves room for your other parameters."
-  type        = number
-  default     = 0
-}
+
 
 data "coder_workspace" "me" {}
 
@@ -267,7 +263,7 @@ data "coder_parameter" "additional_volumes" {
   form_type    = "tag-select"
   mutable      = true
   default      = jsonencode([])
-  order        = var.order + 1
+  order        = var.parameter_order + 1
 }
 
 data "coder_parameter" "custom_container_count" {
@@ -279,7 +275,7 @@ data "coder_parameter" "custom_container_count" {
   form_type    = "slider"
   mutable      = true
   default      = 0
-  order        = var.order + 2
+  order        = var.parameter_order + 2
   validation {
     min = 0
     max = 3
@@ -297,7 +293,7 @@ data "coder_parameter" "container_1_name" {
   icon         = local.icon.nametag
   mutable      = true
   default      = ""
-  order        = var.order + 3
+  order        = var.parameter_order + 3
   validation {
     regex = "^$|^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$"
     error = "Container name must start with alphanumeric character, contain only letters, numbers, hyphens, and underscores, and be 1-63 characters long."
@@ -313,7 +309,7 @@ data "coder_parameter" "container_1_image" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 4
+  order        = var.parameter_order + 4
   validation {
     regex = "^$|^[a-z0-9._/-]+:[a-zA-Z0-9._-]+$|^[a-z0-9._/-]+$"
     error = "Image must be a valid Docker image name (optionally with tag)."
@@ -329,7 +325,7 @@ data "coder_parameter" "container_1_ports" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 5
+  order        = var.parameter_order + 5
   validation {
     regex = "^$|^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
     error = "Port must be a valid number between 1 and 65535."
@@ -345,7 +341,7 @@ data "coder_parameter" "container_1_local_port" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 6
+  order        = var.parameter_order + 6
   validation {
     regex = "^$|^(19[0-9]{3}|20000)$"
     error = "Local port must be between 19000 and 20000."
@@ -362,7 +358,7 @@ data "coder_parameter" "container_1_volume_mounts" {
   icon         = local.icon.folder
   mutable      = true
   default      = jsonencode([])
-  order        = var.order + 7
+  order        = var.parameter_order + 7
 }
 
 data "coder_parameter" "container_1_env_vars" {
@@ -375,7 +371,7 @@ data "coder_parameter" "container_1_env_vars" {
   icon         = local.icon.environment
   mutable      = true
   default      = ""
-  order        = var.order + 8
+  order        = var.parameter_order + 8
   styling = jsonencode({
     placeholder = <<-PL
     NODE_ENV=production
@@ -393,7 +389,7 @@ data "coder_parameter" "container_1_create_coder_app" {
   icon         = local.icon.globe
   mutable      = true
   default      = "false"
-  order        = var.order + 9
+  order        = var.parameter_order + 9
 }
 
 data "coder_parameter" "container_2_name" {
@@ -405,7 +401,7 @@ data "coder_parameter" "container_2_name" {
   icon         = local.icon.nametag
   mutable      = true
   default      = ""
-  order        = var.order + 9
+  order        = var.parameter_order + 9
   validation {
     regex = "^$|^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$"
     error = "Container name must start with alphanumeric character, contain only letters, numbers, hyphens, and underscores, and be 1-63 characters long."
@@ -421,7 +417,7 @@ data "coder_parameter" "container_2_image" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 10
+  order        = var.parameter_order + 10
   validation {
     regex = "^$|^[a-z0-9._/-]+:[a-zA-Z0-9._-]+$|^[a-z0-9._/-]+$"
     error = "Image must be a valid Docker image name (optionally with tag)."
@@ -437,7 +433,7 @@ data "coder_parameter" "container_2_ports" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 11
+  order        = var.parameter_order + 11
   validation {
     regex = "^$|^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
     error = "Port must be a valid number between 1 and 65535."
@@ -453,7 +449,7 @@ data "coder_parameter" "container_2_local_port" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 12
+  order        = var.parameter_order + 12
   validation {
     regex = "^$|^(19[0-9]{3}|20000)$"
     error = "Local port must be between 19000 and 20000."
@@ -470,7 +466,7 @@ data "coder_parameter" "container_2_volume_mounts" {
   icon         = local.icon.folder
   mutable      = true
   default      = jsonencode([])
-  order        = var.order + 13
+  order        = var.parameter_order + 13
 }
 
 data "coder_parameter" "container_2_env_vars" {
@@ -483,7 +479,7 @@ data "coder_parameter" "container_2_env_vars" {
   icon         = local.icon.environment
   mutable      = true
   default      = ""
-  order        = var.order + 14
+  order        = var.parameter_order + 14
   styling = jsonencode({
     placeholder = <<-PL
     NODE_ENV=production
@@ -501,7 +497,7 @@ data "coder_parameter" "container_2_create_coder_app" {
   icon         = local.icon.globe
   mutable      = true
   default      = "false"
-  order        = var.order + 15
+  order        = var.parameter_order + 15
 }
 
 data "coder_parameter" "container_3_name" {
@@ -513,7 +509,7 @@ data "coder_parameter" "container_3_name" {
   icon         = local.icon.nametag
   mutable      = true
   default      = ""
-  order        = var.order + 16
+  order        = var.parameter_order + 16
   validation {
     regex = "^$|^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$"
     error = "Container name must start with alphanumeric character, contain only letters, numbers, hyphens, and underscores, and be 1-63 characters long."
@@ -529,7 +525,7 @@ data "coder_parameter" "container_3_image" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 17
+  order        = var.parameter_order + 17
   validation {
     regex = "^$|^[a-z0-9._/-]+:[a-zA-Z0-9._-]+$|^[a-z0-9._/-]+$"
     error = "Image must be a valid Docker image name (optionally with tag)."
@@ -545,7 +541,7 @@ data "coder_parameter" "container_3_ports" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 18
+  order        = var.parameter_order + 18
   validation {
     regex = "^$|^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
     error = "Port must be a valid number between 1 and 65535."
@@ -561,7 +557,7 @@ data "coder_parameter" "container_3_local_port" {
   type         = "string"
   mutable      = true
   default      = ""
-  order        = var.order + 19
+  order        = var.parameter_order + 19
   validation {
     regex = "^$|^(19[0-9]{3}|20000)$"
     error = "Local port must be between 19000 and 20000."
@@ -578,7 +574,7 @@ data "coder_parameter" "container_3_volume_mounts" {
   icon         = local.icon.folder
   mutable      = true
   default      = jsonencode([])
-  order        = var.order + 20
+  order        = var.parameter_order + 20
 }
 
 data "coder_parameter" "container_3_env_vars" {
@@ -591,7 +587,7 @@ data "coder_parameter" "container_3_env_vars" {
   icon         = local.icon.environment
   mutable      = true
   default      = ""
-  order        = var.order + 21
+  order        = var.parameter_order + 21
   styling = jsonencode({
     placeholder = <<-PL
     NODE_ENV=production
@@ -609,7 +605,7 @@ data "coder_parameter" "container_3_create_coder_app" {
   icon         = local.icon.globe
   mutable      = true
   default      = "false"
-  order        = var.order + 22
+  order        = var.parameter_order + 22
 }
 
 data "coder_parameter" "custom_coder_app_count" {
@@ -621,7 +617,7 @@ data "coder_parameter" "custom_coder_app_count" {
   form_type    = "slider"
   mutable      = true
   default      = 0
-  order        = var.order + 23
+  order        = var.parameter_order + 23
   validation {
     min = 0
     max = 3
@@ -637,7 +633,7 @@ data "coder_parameter" "app_1_name" {
   icon         = local.icon.nametag
   mutable      = true
   default      = ""
-  order        = var.order + 24
+  order        = var.parameter_order + 24
 }
 
 data "coder_parameter" "app_1_slug" {
@@ -649,7 +645,7 @@ data "coder_parameter" "app_1_slug" {
   icon         = local.icon.tag
   mutable      = true
   default      = ""
-  order        = var.order + 25
+  order        = var.parameter_order + 25
   validation {
     regex = "^$|^[a-z0-9][a-z0-9_-]{0,31}$"
     error = "Slug must be lowercase, start with alphanumeric, and contain only letters, numbers, hyphens, underscores (max 32 chars)."
@@ -665,7 +661,7 @@ data "coder_parameter" "app_1_url" {
   icon         = local.icon.paperclip
   mutable      = true
   default      = ""
-  order        = var.order + 26
+  order        = var.parameter_order + 26
   validation {
     regex = "^$|^https?://[a-zA-Z0-9.-]+(:([1-9][0-9]{0,4}))?(/.*)?$"
     error = "URL must be a valid HTTP/HTTPS URL with optional port and path."
@@ -681,7 +677,7 @@ data "coder_parameter" "app_1_icon" {
   icon         = "/icon/image.svg"
   mutable      = true
   default      = ""
-  order        = var.order + 27
+  order        = var.parameter_order + 27
 }
 
 data "coder_parameter" "app_1_share" {
@@ -692,7 +688,7 @@ data "coder_parameter" "app_1_share" {
   icon         = local.icon.share_permission
   default      = "owner"
   mutable      = true
-  order        = var.order + 28
+  order        = var.parameter_order + 28
   option {
     name  = "Owner"
     value = "owner"
@@ -715,7 +711,7 @@ data "coder_parameter" "app_2_name" {
   icon         = local.icon.nametag
   mutable      = true
   default      = ""
-  order        = var.order + 29
+  order        = var.parameter_order + 29
 }
 
 data "coder_parameter" "app_2_slug" {
@@ -731,7 +727,7 @@ data "coder_parameter" "app_2_slug" {
   icon         = local.icon.tag
   mutable      = true
   default      = ""
-  order        = var.order + 30
+  order        = var.parameter_order + 30
   validation {
     regex = "^$|^[a-z0-9][a-z0-9_-]{0,31}$"
     error = "Slug must be lowercase, start with alphanumeric, and contain only letters, numbers, hyphens, underscores (max 32 chars)."
@@ -751,7 +747,7 @@ data "coder_parameter" "app_2_url" {
   icon         = local.icon.paperclip
   mutable      = true
   default      = ""
-  order        = var.order + 31
+  order        = var.parameter_order + 31
   validation {
     regex = "^$|^https?://[a-zA-Z0-9.-]+(:([1-9][0-9]{0,4}))?(/.*)?$"
     error = "URL must be a valid HTTP/HTTPS URL with optional port and path."
@@ -771,7 +767,7 @@ data "coder_parameter" "app_2_icon" {
   icon         = "/icon/image.svg"
   mutable      = true
   default      = ""
-  order        = var.order + 32
+  order        = var.parameter_order + 32
 }
 
 data "coder_parameter" "app_2_share" {
@@ -782,7 +778,7 @@ data "coder_parameter" "app_2_share" {
   icon         = local.icon.share_permission
   default      = "owner"
   mutable      = true
-  order        = var.order + 33
+  order        = var.parameter_order + 33
   option {
     name  = "Owner"
     value = "owner"
@@ -805,7 +801,7 @@ data "coder_parameter" "app_3_name" {
   icon         = local.icon.nametag
   mutable      = true
   default      = ""
-  order        = var.order + 34
+  order        = var.parameter_order + 34
 }
 
 data "coder_parameter" "app_3_slug" {
@@ -821,7 +817,7 @@ data "coder_parameter" "app_3_slug" {
   icon         = local.icon.tag
   mutable      = true
   default      = ""
-  order        = var.order + 35
+  order        = var.parameter_order + 35
   validation {
     regex = "^$|^[a-z0-9][a-z0-9_-]{0,31}$"
     error = "Slug must be lowercase, start with alphanumeric, and contain only letters, numbers, hyphens, underscores (max 32 chars)."
@@ -841,7 +837,7 @@ data "coder_parameter" "app_3_url" {
   icon         = local.icon.paperclip
   mutable      = true
   default      = ""
-  order        = var.order + 36
+  order        = var.parameter_order + 36
   validation {
     regex = "^$|^https?://[a-zA-Z0-9.-]+(:([1-9][0-9]{0,4}))?(/.*)?$"
     error = "URL must be a valid HTTP/HTTPS URL with optional port and path."
@@ -861,7 +857,7 @@ data "coder_parameter" "app_3_icon" {
   icon         = "/icon/image.svg"
   mutable      = true
   default      = ""
-  order        = var.order + 37
+  order        = var.parameter_order + 37
 }
 
 data "coder_parameter" "app_3_share" {
@@ -872,7 +868,7 @@ data "coder_parameter" "app_3_share" {
   icon         = local.icon.share_permission
   default      = "owner"
   mutable      = true
-  order        = var.order + 38
+  order        = var.parameter_order + 38
   option {
     name  = "Owner"
     value = "owner"

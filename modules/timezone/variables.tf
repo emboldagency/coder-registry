@@ -8,3 +8,9 @@ variable "timezone" {
   type        = string
   default     = null # If unset (null), the module will use the workspace parameter value instead.
 }
+
+variable "parameter_order" {
+  type        = number
+  description = "The order determines the position of a template parameter in the UI/CLI presentation."
+  default     = null
+}

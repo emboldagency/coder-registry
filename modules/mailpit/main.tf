@@ -22,11 +22,7 @@ locals {
   workspace_name = try(data.coder_workspace.me.name, "unknown")
 }
 
-variable "order" {
-  description = "Order for Coder parameters in this module. This module can create a maximum of 34 parameters, so choose an order that leaves room for your other parameters."
-  type        = number
-  default     = 0
-}
+
 
 resource "docker_volume" "mailpit_volume" {
   count = data.coder_workspace.me.start_count

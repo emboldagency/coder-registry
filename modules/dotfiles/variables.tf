@@ -3,7 +3,7 @@ variable "agent_id" {
   type        = string
 }
 
-variable "coder_parameter_order" {
+variable "parameter_order" {
   type        = number
   description = "The order determines the position of a template parameter in the UI/CLI presentation. The lowest order is shown first and parameters with equal order are sorted by name (ascending order)."
   default     = null
