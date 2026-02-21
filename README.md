@@ -6,15 +6,16 @@ A centralized collection of Terraform modules used for provisioning and configur
 
 ## Available Modules
 
-| Module                                       | Description                                                             |
-| -------------------------------------------- | ----------------------------------------------------------------------- |
-| [**Adminer**](./modules/adminer)             | Deploys an Adminer database management container proxy.                 |
-| [**Dotfiles**](./modules/dotfiles)           | Links dotfiles into the workspace container.                            |
-| [**Home Setup**](./modules/home-setup)       | Configures the `/home/embold` directory structure and user permissions. |
-| [**Mailpit**](./modules/mailpit)             | Deploys a Mailpit container to capture and test outbound emails.        |
-| [**Reverse Proxy**](./modules/reverse-proxy) | Creates a reverse proxy using `socat` for workspace forwarding.         |
-| [**SSH Setup**](./modules/ssh-setup)         | Provisions SSH host keys and configurations securely.                   |
-| [**Timezone**](./modules/timezone)           | Automatically sets the workspace timezone based on the agent parameter. |
+| Module                                               | Description                                                             |
+| ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| [**Adminer**](./modules/adminer)                     | Deploys an Adminer database management container proxy.                 |
+| [**Dotfiles**](./modules/dotfiles)                   | Links dotfiles into the workspace container.                            |
+| [**Dynamic Resources**](./modules/dynamic-resources) | Dynamically create additional Docker containers, volumes, and apps.     |
+| [**Home Setup**](./modules/home-setup)               | Configures the `/home/embold` directory structure and user permissions. |
+| [**Mailpit**](./modules/mailpit)                     | Deploys a Mailpit container to capture and test outbound emails.        |
+| [**Reverse Proxy**](./modules/reverse-proxy)         | Creates a reverse proxy using `socat` for workspace forwarding.         |
+| [**SSH Setup**](./modules/ssh-setup)                 | Provisions SSH host keys and configurations securely.                   |
+| [**Timezone**](./modules/timezone)                   | Automatically sets the workspace timezone based on the agent parameter. |
 
 ## Usage
 
