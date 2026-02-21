@@ -9,11 +9,7 @@ variable "coder_parameter_order" {
   default     = null
 }
 
-variable "default_dotfiles_uri" {
-  type        = string
-  description = "The default dotfiles URI if the workspace user does not provide one"
-  default     = ""
-}
+
 
 variable "description" {
   type        = string
@@ -21,11 +17,7 @@ variable "description" {
   default     = "Enter a URL for a [dotfiles repository](https://dotfiles.github.io) to personalize your workspace"
 }
 
-variable "dotfiles_uri" {
-  description = "The URL to a dotfiles repository. (optional, when set, the user isn't prompted for their dotfiles)"
-  type        = string
-  default     = ""
-}
+
 
 variable "group" {
   type        = string
@@ -33,11 +25,7 @@ variable "group" {
   default     = null
 }
 
-variable "mode" {
-  description = "Optional override for dotfiles handling mode. If empty, the module's coder_parameter will control behavior."
-  type        = string
-  default     = null # When null, the module will create a workspace parameter so end-users can change mode at runtime.
-}
+
 
 variable "order" {
   type        = number
@@ -45,11 +33,7 @@ variable "order" {
   default     = null
 }
 
-variable "packages" {
-  description = "Optional space-separated list of package specifiers for stow/manual linking. If null, the module will attempt to auto-detect 'dotfiles' or 'shell' subdirs or fall back to empty."
-  type        = string
-  default     = null
-}
+
 
 variable "stow_preserve_changes" {
   description = "When true, stash working-tree changes after running 'stow --adopt' to preserve local edits. Set to false to skip creating a stash."

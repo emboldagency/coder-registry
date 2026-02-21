@@ -7,19 +7,16 @@ terraform {
 }
 
 data "coder_parameter" "dotfiles_uri" {
-  count        = var.dotfiles_uri == null ? 1 : 0
   type         = "string"
   name         = "dotfiles_uri"
   display_name = "Dotfiles URL"
   order        = var.coder_parameter_order
-  default      = var.default_dotfiles_uri
   description  = var.description
   mutable      = true
   icon         = "/icon/dotfiles.svg"
 }
 
 data "coder_parameter" "dotfiles_mode" {
-  count       = var.mode == null ? 1 : 0
   name        = "Dotfiles Mode"
   description = "How should embedded dotfiles be applied?"
   type        = "string"
@@ -41,7 +38,7 @@ data "coder_parameter" "dotfiles_mode" {
 }
 
 data "coder_parameter" "dotfiles_packages" {
-  count       = var.packages == null ? 1 : 0
+  count       = data.coder_parameter.dotfiles_mode.value == "symlink" ? 1 : 0
   name        = "Dotfiles Packages"
   description = "Space-separated list of package specifiers for stow/manual linking"
   icon        = "/icon/dotfiles.svg"
@@ -51,22 +48,12 @@ data "coder_parameter" "dotfiles_packages" {
 }
 
 locals {
-  dotfiles_uri = var.dotfiles_uri != null ? var.dotfiles_uri : data.coder_parameter.dotfiles_uri[0].value
+  dotfiles_uri = data.coder_parameter.dotfiles_uri.value
   user         = var.user != null ? var.user : ""
 
-  # Prefer the first non-empty value among the explicit var, the workspace
-  # parameter (if present), or empty string.
-  resolved_mode = (
-    var.mode != null && trimspace(var.mode) != "" ? trimspace(var.mode) : (
-      (try(data.coder_parameter.dotfiles_mode[0].value, "") != "" && trimspace(try(data.coder_parameter.dotfiles_mode[0].value, "")) != "") ? trimspace(try(data.coder_parameter.dotfiles_mode[0].value, "")) : ""
-    )
-  )
+  resolved_mode = data.coder_parameter.dotfiles_mode.value
 
-  resolved_packages = (
-    var.packages != null && trimspace(var.packages) != "" ? trimspace(var.packages) : (
-      (try(data.coder_parameter.dotfiles_packages[0].value, "") != "" && trimspace(try(data.coder_parameter.dotfiles_packages[0].value, "")) != "") ? trimspace(try(data.coder_parameter.dotfiles_packages[0].value, "")) : ""
-    )
-  )
+  resolved_packages = try(data.coder_parameter.dotfiles_packages[0].value, "")
 }
 
 resource "coder_script" "link_dotfiles" {
@@ -102,9 +89,4 @@ output "packages" {
 output "stow_preserve_changes" {
   description = "Whether the module will stash repo changes after stow adoption"
   value       = var.stow_preserve_changes
-}
-
-output "uri_accepted" {
-  description = "Dotfiles URI passed to module"
-  value       = var.dotfiles_uri
 }
