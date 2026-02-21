@@ -22,6 +22,7 @@ data "coder_parameter" "dotfiles_mode" {
   type        = "string"
   default     = "none"
   mutable     = true
+  order       = try(var.coder_parameter_order + 1, null)
   icon        = "/icon/dotfiles.svg"
   option {
     name  = "Symlink"
@@ -42,6 +43,7 @@ data "coder_parameter" "dotfiles_packages" {
   name        = "Dotfiles Packages"
   description = "Space-separated list of package specifiers for stow/manual linking"
   icon        = "/icon/dotfiles.svg"
+  order       = try(var.coder_parameter_order + 2, null)
   type        = "string"
   default     = ""
   mutable     = true
