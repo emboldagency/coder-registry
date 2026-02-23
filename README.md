@@ -30,4 +30,4 @@ module "timezone" {
 
 ## Versioning
 
-This repository uses Calendar Versioning based on dates (e.g., `v2026.02.20` or `v26.02.20`). To ensure stability, pin your template module source URLs to a specific release tag rather than the `main` branch.
+This repository uses Calendar Versioning based on dates + zero based patch (e.g., `v2026.02.20.0`). To ensure stability, pin your template module source URLs to a specific release tag rather than the `main` branch.

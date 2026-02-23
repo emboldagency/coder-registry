@@ -48,4 +48,4 @@ module "link_dotfiles" {
 
 ## Publishing
 
-Tag releases with SemVer (e.g. `v1.0.1`) and reference them with `?ref=` in the `git::` source string.
+Tag releases with Calendar Versioning (e.g. `v2026.02.23.0`) and reference them with `?ref=` in the `git::` source string.
