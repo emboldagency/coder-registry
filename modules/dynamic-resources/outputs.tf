@@ -49,7 +49,8 @@ output "created_apps" {
 output "connection_metadata" {
   description = "A map of container names and their image/connection details for metadata display"
   value = { for k, v in local.all_containers_map : v.name => {
-    hostname = v.name
-    image    = basename(v.image)
+    hostname     = v.name
+    image        = basename(v.image)
+    custom_index = v.custom_index
   } }
 }
