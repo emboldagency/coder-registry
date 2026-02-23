@@ -71,8 +71,8 @@ locals {
     for c in local.custom_containers : "custom-${c.custom_index}" => {
       name         = tostring(c.name)
       image        = tostring(c.image)
-      mounts       = tomap(c.mounts)
-      env          = tolist(c.env)
+      mounts       = { for k, v in c.mounts : tostring(k) => tostring(v) }
+      env          = [for v in c.env : tostring(v)]
       custom_index = tonumber(c.custom_index)
     }
   }
@@ -862,7 +862,7 @@ resource "docker_volume" "dynamic_resource_volume" {
 
 resource "docker_container" "dynamic_resource_container" {
   # Only create containers if the workspace is running.
-  for_each = data.coder_workspace.me.start_count > 0 ? local.all_containers_map : tomap({})
+  for_each = data.coder_workspace.me.start_count > 0 ? local.all_containers_map : {}
   name = (
     startswith(each.key, "custom-")
     ? "${var.resource_name_base}-custom-${each.value.custom_index}"
