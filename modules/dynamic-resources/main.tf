@@ -33,22 +33,22 @@ locals {
         image = try(data.coder_parameter.container_1_image[0].value, "")
         # Parse volume mounts from "volume:mount_path" string format.
         # Splits by colon, trims whitespace, and ignores malformed entries.
-        mounts = { for m in try(jsondecode(data.coder_parameter.container_1_volume_mounts[0].value), []) : trimspace(split(":", m)[0]) => trimspace(split(":", m)[1]) if length(split(":", m)) >= 2 }
+        mounts = tomap({ for m in try(jsondecode(data.coder_parameter.container_1_volume_mounts[0].value), []) : trimspace(split(":", m)[0]) => trimspace(split(":", m)[1]) if length(split(":", m)) >= 2 })
         # Parse environment variables from multiline string.
         # Splits by newline, trims whitespace, and ensures "KEY=VALUE" format via regex.
-        env = [for l in split("\n", try(data.coder_parameter.container_1_env_vars[0].value, "")) : trimspace(l) if trimspace(l) != "" && can(regex("^[A-Za-z_][A-Za-z0-9_]*=.*$", trimspace(l)))]
+        env = tolist([for l in split("\n", try(data.coder_parameter.container_1_env_vars[0].value, "")) : trimspace(l) if trimspace(l) != "" && can(regex("^[A-Za-z_][A-Za-z0-9_]*=.*$", trimspace(l)))])
       },
       {
         name   = try(data.coder_parameter.container_2_name[0].value, "")
         image  = try(data.coder_parameter.container_2_image[0].value, "")
-        mounts = { for m in try(jsondecode(data.coder_parameter.container_2_volume_mounts[0].value), []) : trimspace(split(":", m)[0]) => trimspace(split(":", m)[1]) if length(split(":", m)) >= 2 }
-        env    = [for l in split("\n", try(data.coder_parameter.container_2_env_vars[0].value, "")) : trimspace(l) if trimspace(l) != "" && can(regex("^[A-Za-z_][A-Za-z0-9_]*=.*$", trimspace(l)))]
+        mounts = tomap({ for m in try(jsondecode(data.coder_parameter.container_2_volume_mounts[0].value), []) : trimspace(split(":", m)[0]) => trimspace(split(":", m)[1]) if length(split(":", m)) >= 2 })
+        env    = tolist([for l in split("\n", try(data.coder_parameter.container_2_env_vars[0].value, "")) : trimspace(l) if trimspace(l) != "" && can(regex("^[A-Za-z_][A-Za-z0-9_]*=.*$", trimspace(l)))])
       },
       {
         name   = try(data.coder_parameter.container_3_name[0].value, "")
         image  = try(data.coder_parameter.container_3_image[0].value, "")
-        mounts = { for m in try(jsondecode(data.coder_parameter.container_3_volume_mounts[0].value), []) : trimspace(split(":", m)[0]) => trimspace(split(":", m)[1]) if length(split(":", m)) >= 2 }
-        env    = [for l in split("\n", try(data.coder_parameter.container_3_env_vars[0].value, "")) : trimspace(l) if trimspace(l) != "" && can(regex("^[A-Za-z_][A-Za-z0-9_]*=.*$", trimspace(l)))]
+        mounts = tomap({ for m in try(jsondecode(data.coder_parameter.container_3_volume_mounts[0].value), []) : trimspace(split(":", m)[0]) => trimspace(split(":", m)[1]) if length(split(":", m)) >= 2 })
+        env    = tolist([for l in split("\n", try(data.coder_parameter.container_3_env_vars[0].value, "")) : trimspace(l) if trimspace(l) != "" && can(regex("^[A-Za-z_][A-Za-z0-9_]*=.*$", trimspace(l)))])
       }
     ] : merge(c, { custom_index = i + 1 })
     if c.name != "" && c.image != ""
