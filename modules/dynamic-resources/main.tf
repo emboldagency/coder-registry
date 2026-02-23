@@ -67,7 +67,15 @@ locals {
   volume_names_to_create = distinct(concat(local.base_volume_names, local.implicit_volume_names))
 
   # Map for for_each resources
-  all_containers_map = { for c in local.custom_containers : "custom-${c.custom_index}" => c }
+  all_containers_map = {
+    for c in local.custom_containers : "custom-${c.custom_index}" => {
+      name         = tostring(c.name)
+      image        = tostring(c.image)
+      mounts       = tomap(c.mounts)
+      env          = tolist(c.env)
+      custom_index = tonumber(c.custom_index)
+    }
+  }
 
   # Build apps from fixed parameter slots
   custom_apps = [
