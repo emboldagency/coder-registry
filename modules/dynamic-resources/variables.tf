@@ -27,7 +27,7 @@ variable "container_memory_limit" {
 variable "container_user_id" {
   type        = string
   description = "User ID to run containers as. Leave null to use container default."
-  default     = 1000
+  default     = null
 }
 
 variable "reserved_container_names" {

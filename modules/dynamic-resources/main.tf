@@ -12,8 +12,6 @@ terraform {
   }
 }
 
-
-
 data "coder_workspace" "me" {}
 
 locals {
