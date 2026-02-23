@@ -966,16 +966,14 @@ resource "coder_app" "dynamic_app" {
 resource "coder_metadata" "dynamic_container_info" {
   for_each    = data.coder_workspace.me.start_count > 0 ? local.all_containers_map : tomap({})
   resource_id = docker_container.dynamic_resource_container[each.key].id
+
   item {
-    key   = "Hostname"
+    key   = "Connection Hostname"
     value = each.value.name
   }
-  # item {
-  #   key   = "Image"
-  #   value = each.value.image
-  # }
-  # item {
-  #   key   = "Type"
-  #   value = startswith(each.key, "preset-") ? "Preset" : "Custom"
-  # }
+
+  item {
+    key   = "Image"
+    value = each.value.image
+  }
 }
