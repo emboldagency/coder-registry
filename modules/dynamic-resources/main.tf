@@ -966,6 +966,7 @@ resource "coder_app" "dynamic_app" {
 resource "coder_metadata" "dynamic_container_info" {
   for_each    = data.coder_workspace.me.start_count > 0 ? local.all_containers_map : tomap({})
   resource_id = docker_container.dynamic_resource_container[each.key].id
+  hide        = false
 
   item {
     key   = "Connection Hostname"
