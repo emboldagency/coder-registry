@@ -45,3 +45,11 @@ output "created_apps" {
   description = "List of Coder app slugs created by this module"
   value       = [for a in coder_app.dynamic_app : a.slug]
 }
+
+output "connection_metadata" {
+  description = "A map of container names and their image/connection details for metadata display"
+  value = { for k, v in local.all_containers_map : v.name => {
+    hostname = v.name
+    image    = basename(v.image)
+  } }
+}

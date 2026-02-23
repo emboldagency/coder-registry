@@ -961,20 +961,3 @@ resource "coder_app" "dynamic_app" {
   subdomain    = true
   order        = 2
 }
-
-# Display metadata for each dynamic container showing how to reach them
-resource "coder_metadata" "dynamic_container_info" {
-  for_each    = data.coder_workspace.me.start_count > 0 ? local.all_containers_map : tomap({})
-  resource_id = docker_container.dynamic_resource_container[each.key].id
-  hide        = false
-
-  item {
-    key   = "Connection Hostname"
-    value = each.value.name
-  }
-
-  item {
-    key   = "Image"
-    value = each.value.image
-  }
-}
