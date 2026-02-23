@@ -292,10 +292,7 @@ data "coder_parameter" "container_1_name" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 3
-  validation {
-    regex = "^$|^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$"
-    error = "Container name must start with alphanumeric character, contain only letters, numbers, hyphens, and underscores, and be 1-63 characters long."
-  }
+
 }
 
 data "coder_parameter" "container_1_image" {
@@ -308,10 +305,7 @@ data "coder_parameter" "container_1_image" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 4
-  validation {
-    regex = "^$|^[a-z0-9._/-]+:[a-zA-Z0-9._-]+$|^[a-z0-9._/-]+$"
-    error = "Image must be a valid Docker image name (optionally with tag)."
-  }
+
 }
 
 data "coder_parameter" "container_1_ports" {
@@ -324,10 +318,7 @@ data "coder_parameter" "container_1_ports" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 5
-  validation {
-    regex = "^$|^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
-    error = "Port must be a valid number between 1 and 65535."
-  }
+
 }
 
 data "coder_parameter" "container_1_local_port" {
@@ -340,10 +331,7 @@ data "coder_parameter" "container_1_local_port" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 6
-  validation {
-    regex = "^$|^(19[0-9]{3}|20000)$"
-    error = "Local port must be between 19000 and 20000."
-  }
+
 }
 
 data "coder_parameter" "container_1_volume_mounts" {
@@ -400,10 +388,7 @@ data "coder_parameter" "container_2_name" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 9
-  validation {
-    regex = "^$|^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$"
-    error = "Container name must start with alphanumeric character, contain only letters, numbers, hyphens, and underscores, and be 1-63 characters long."
-  }
+
 }
 
 data "coder_parameter" "container_2_image" {
@@ -416,10 +401,7 @@ data "coder_parameter" "container_2_image" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 10
-  validation {
-    regex = "^$|^[a-z0-9._/-]+:[a-zA-Z0-9._-]+$|^[a-z0-9._/-]+$"
-    error = "Image must be a valid Docker image name (optionally with tag)."
-  }
+
 }
 
 data "coder_parameter" "container_2_ports" {
@@ -432,10 +414,7 @@ data "coder_parameter" "container_2_ports" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 11
-  validation {
-    regex = "^$|^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
-    error = "Port must be a valid number between 1 and 65535."
-  }
+
 }
 
 data "coder_parameter" "container_2_local_port" {
@@ -448,10 +427,7 @@ data "coder_parameter" "container_2_local_port" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 12
-  validation {
-    regex = "^$|^(19[0-9]{3}|20000)$"
-    error = "Local port must be between 19000 and 20000."
-  }
+
 }
 
 data "coder_parameter" "container_2_volume_mounts" {
@@ -508,10 +484,7 @@ data "coder_parameter" "container_3_name" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 16
-  validation {
-    regex = "^$|^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$"
-    error = "Container name must start with alphanumeric character, contain only letters, numbers, hyphens, and underscores, and be 1-63 characters long."
-  }
+
 }
 
 data "coder_parameter" "container_3_image" {
@@ -524,10 +497,7 @@ data "coder_parameter" "container_3_image" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 17
-  validation {
-    regex = "^$|^[a-z0-9._/-]+:[a-zA-Z0-9._-]+$|^[a-z0-9._/-]+$"
-    error = "Image must be a valid Docker image name (optionally with tag)."
-  }
+
 }
 
 data "coder_parameter" "container_3_ports" {
@@ -540,10 +510,7 @@ data "coder_parameter" "container_3_ports" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 18
-  validation {
-    regex = "^$|^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
-    error = "Port must be a valid number between 1 and 65535."
-  }
+
 }
 
 data "coder_parameter" "container_3_local_port" {
@@ -556,10 +523,7 @@ data "coder_parameter" "container_3_local_port" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 19
-  validation {
-    regex = "^$|^(19[0-9]{3}|20000)$"
-    error = "Local port must be between 19000 and 20000."
-  }
+
 }
 
 data "coder_parameter" "container_3_volume_mounts" {
@@ -644,10 +608,7 @@ data "coder_parameter" "app_1_slug" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 25
-  validation {
-    regex = "^$|^[a-z0-9][a-z0-9_-]{0,31}$"
-    error = "Slug must be lowercase, start with alphanumeric, and contain only letters, numbers, hyphens, underscores (max 32 chars)."
-  }
+
 }
 
 data "coder_parameter" "app_1_url" {
@@ -660,10 +621,7 @@ data "coder_parameter" "app_1_url" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 26
-  validation {
-    regex = "^$|^https?://[a-zA-Z0-9.-]+(:([1-9][0-9]{0,4}))?(/.*)?$"
-    error = "URL must be a valid HTTP/HTTPS URL with optional port and path."
-  }
+
 }
 
 data "coder_parameter" "app_1_icon" {
@@ -726,10 +684,7 @@ data "coder_parameter" "app_2_slug" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 30
-  validation {
-    regex = "^$|^[a-z0-9][a-z0-9_-]{0,31}$"
-    error = "Slug must be lowercase, start with alphanumeric, and contain only letters, numbers, hyphens, underscores (max 32 chars)."
-  }
+
 }
 
 data "coder_parameter" "app_2_url" {
@@ -746,10 +701,7 @@ data "coder_parameter" "app_2_url" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 31
-  validation {
-    regex = "^$|^https?://[a-zA-Z0-9.-]+(:([1-9][0-9]{0,4}))?(/.*)?$"
-    error = "URL must be a valid HTTP/HTTPS URL with optional port and path."
-  }
+
 }
 
 data "coder_parameter" "app_2_icon" {
@@ -816,10 +768,7 @@ data "coder_parameter" "app_3_slug" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 35
-  validation {
-    regex = "^$|^[a-z0-9][a-z0-9_-]{0,31}$"
-    error = "Slug must be lowercase, start with alphanumeric, and contain only letters, numbers, hyphens, underscores (max 32 chars)."
-  }
+
 }
 
 data "coder_parameter" "app_3_url" {
@@ -836,10 +785,7 @@ data "coder_parameter" "app_3_url" {
   mutable      = true
   default      = ""
   order        = var.parameter_order + 36
-  validation {
-    regex = "^$|^https?://[a-zA-Z0-9.-]+(:([1-9][0-9]{0,4}))?(/.*)?$"
-    error = "URL must be a valid HTTP/HTTPS URL with optional port and path."
-  }
+
 }
 
 data "coder_parameter" "app_3_icon" {
