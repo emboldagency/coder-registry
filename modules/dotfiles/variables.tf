@@ -3,6 +3,18 @@ variable "agent_id" {
   type        = string
 }
 
+variable "dotfiles_uri" {
+  description = "Optional override for the dotfiles URI. When set, the module skips creating a coder_parameter and uses this value directly. Useful for backward-compatible upgrades where the URI comes from a legacy parameter."
+  type        = string
+  default     = null
+}
+
+variable "default_dotfiles_uri" {
+  description = "Default value for the dotfiles_uri parameter (when the parameter is created by the module)."
+  type        = string
+  default     = ""
+}
+
 variable "parameter_order" {
   type        = number
   description = "The order determines the position of a template parameter in the UI/CLI presentation. The lowest order is shown first and parameters with equal order are sorted by name (ascending order)."

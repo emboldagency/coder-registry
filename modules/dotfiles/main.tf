@@ -7,9 +7,11 @@ terraform {
 }
 
 data "coder_parameter" "dotfiles_uri" {
+  count        = var.dotfiles_uri == null ? 1 : 0
   type         = "string"
   name         = "dotfiles_uri"
   display_name = "Dotfiles URL"
+  default      = var.default_dotfiles_uri
   order        = var.parameter_order
   description  = var.description
   mutable      = true
@@ -50,7 +52,7 @@ data "coder_parameter" "dotfiles_packages" {
 }
 
 locals {
-  dotfiles_uri = data.coder_parameter.dotfiles_uri.value
+  dotfiles_uri = var.dotfiles_uri != null ? var.dotfiles_uri : data.coder_parameter.dotfiles_uri[0].value
   user         = var.user != null ? var.user : ""
 
   resolved_mode = data.coder_parameter.dotfiles_mode.value
