@@ -13,6 +13,22 @@ DOTFILES_USER="${DOTFILES_USER}"
 STOW_PRESERVE="${PRESERVE_STASH}"
 
 # ------------------------------------------------------------------------------
+# URI Validation (Defense in Depth)
+# ------------------------------------------------------------------------------
+if [ -n "$DOTFILES_URL" ]; then
+  # Check for invalid characters that could indicate command injection
+  if [[ "$DOTFILES_URL" =~ [^a-zA-Z0-9._/:@-] ]]; then
+    echo "ERROR: DOTFILES_URI contains invalid characters" >&2
+    exit 1
+  fi
+  # Ensure it's a valid repository URL format
+  if ! [[ "$DOTFILES_URL" =~ ^(https?://|ssh://|git@|git://) ]]; then
+    echo "ERROR: DOTFILES_URI must be a valid repository URL (https://, http://, ssh://, git@, or git://)" >&2
+    exit 1
+  fi
+fi
+
+# ------------------------------------------------------------------------------
 # User Switching Logic
 # ------------------------------------------------------------------------------
 

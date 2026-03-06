@@ -75,6 +75,22 @@ resource "coder_script" "link_dotfiles" {
   })
 }
 
+resource "coder_app" "dotfiles" {
+  count        = var.manual_update ? 1 : 0
+  agent_id     = var.agent_id
+  display_name = "Refresh Dotfiles"
+  slug         = "dotfiles"
+  icon         = "/icon/dotfiles.svg"
+  order        = var.order
+  command = templatefile("${path.module}/run.sh", {
+    DOTFILES_URI   = local.dotfiles_uri,
+    MODE           = local.resolved_mode,
+    PACKAGES       = local.resolved_packages,
+    PRESERVE_STASH = tostring(var.stow_preserve_changes),
+    DOTFILES_USER  = local.user
+  })
+}
+
 output "dotfiles_uri" {
   description = "Dotfiles URI"
   value       = local.dotfiles_uri

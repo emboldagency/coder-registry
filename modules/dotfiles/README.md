@@ -15,7 +15,8 @@ A comprehensive Coder module that clones a dotfiles repository and applies them 
   - Each item may be `origin` (e.g. `dotfiles`) or `origin:target` (e.g. `home:dotfiles` or `dotfiles:/etc/skel`).
   - If omitted, the module will auto-detect `dotfiles/` and/or `home/` subdirs in the repo.
   - If omitted, the module also exposes a workspace parameter named `Dotfiles Packages`.
-- `stow_preserve_changes` (bool, optional) - If `true` (default), changes created by `stow --adopt` are stashed to preserve local edits.
+- `stow_preserve_changes` (bool, optional) - If `true` (default), changes created by stow are stashed to preserve local edits.
+- `manual_update` (bool, optional) - If `true`, adds a "Refresh Dotfiles" button to the workspace page for on-demand updates. Default: `false`.
 
 ## Usage
 
@@ -31,6 +32,7 @@ module "link_dotfiles" {
   # user                  = "root"
   # packages              = "dotfiles home:dotfiles"
   # stow_preserve_changes = true
+  # manual_update         = true  # Adds "Refresh Dotfiles" button to workspace
 }
 ```
 
@@ -46,6 +48,8 @@ module "link_dotfiles" {
   - **Conflict Handling**: Before stow runs, the script removes any existing files/symlinks that would be managed by the new packages. This allows seamless upgrades from older setups where dotfiles were installed using different methods.
   - If `stow_preserve_changes` is true, any changes created during the process are stashed to preserve local edits.
 - **Auto-Detection**: When `packages` is not provided, the module prefers `dotfiles/` or `home/` subdirectories inside the repo before falling back to the repo root.
+- **Manual Update Button**: When `manual_update = true`, a "Refresh Dotfiles" button appears in the workspace UI. Clicking it re-runs the entire dotfiles process (git pull + stow). The command runs once and exits cleanly—the output window will close automatically when complete.
+- **Security**: The dotfiles URI is validated to prevent command injection attacks. Only valid git repository URLs are accepted.
 
 ## Troubleshooting
 
