@@ -883,7 +883,7 @@ resource "docker_container" "dynamic_resource_container" {
   user      = var.container_user_id != null ? var.container_user_id : null
   read_only = false # Allow writes to container filesystem
   tmpfs = {
-    "/tmp" = "noexec,nosuid,size=100m"
+    "/tmp" = "nosuid,size=100m"
   }
 
   # Label containers so they can be associated with the Coder agent and workspace

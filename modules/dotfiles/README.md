@@ -42,9 +42,32 @@ module "link_dotfiles" {
   3. **Link**: Applies the files using the selected `mode`.
 - **User Context**: If the `user` input is provided (and differs from the current user), the script utilizes `sudo` to execute the entire clone and link process as that target user.
 - **Stow Strategy**:
-  - When `MODE=symlink` and GNU `stow` is available, it uses `stow --adopt` to claim existing files.
-  - It then immediately stashes the changes created by adoption (if `stow_preserve_changes` is true), effectively "peeling" the local file version off into a stash while leaving the symlink to the repo version in place.
+  - When `MODE=symlink` and GNU `stow` is available, it uses `stow` to create symlinks.
+  - **Conflict Handling**: Before stow runs, the script removes any existing files/symlinks that would be managed by the new packages. This allows seamless upgrades from older setups where dotfiles were installed using different methods.
+  - If `stow_preserve_changes` is true, any changes created during the process are stashed to preserve local edits.
 - **Auto-Detection**: When `packages` is not provided, the module prefers `dotfiles/` or `home/` subdirectories inside the repo before falling back to the repo root.
+
+## Troubleshooting
+
+### Stow Conflicts During Upgrade
+
+**Issue**: Stow fails with messages like "existing target is not owned by stow" or "Absolute/relative mismatch"
+
+**Cause**: This typically occurs when upgrading from an older Coder version where dotfiles were installed using a different method.
+
+**Solution**:
+1. Check the dotfiles log: `cat $HOME/.dotfiles.log`
+2. Identify which files are conflicting (listed in the stow error)
+3. Manually remove them:
+   ```bash
+   rm -f ~/.zshrc ~/.zshenv ~/.vimrc ~/.config/antidote/embold_plugins.zsh
+   rm -f ~/.local/share/code-server/User/settings.json
+   ```
+4. Re-run the dotfiles link step:
+   - Via Coder: Go to workspace creation and re-enable the dotfiles module
+   - Or manually (if symlink mode): `cd ~/.config/coderv2/dotfiles && stow -t $HOME dotfiles`
+
+The pre-stow cleanup should prevent this on fresh setups, but manual intervention may be needed if conflicts arise due to local edits.
 
 ## Publishing
 
