@@ -82,13 +82,26 @@ resource "coder_app" "dotfiles" {
   slug         = "dotfiles"
   icon         = "/icon/dotfiles.svg"
   order        = var.order
-  command = templatefile("${path.module}/run.sh", {
+  command      = <<EOT
+cat <<'EOF' > /tmp/refresh_dotfiles.sh
+${templatefile("${path.module}/run.sh", {
     DOTFILES_URI   = local.dotfiles_uri,
     MODE           = local.resolved_mode,
     PACKAGES       = local.resolved_packages,
     PRESERVE_STASH = tostring(var.stow_preserve_changes),
     DOTFILES_USER  = local.user
-  })
+  })}
+EOF
+chmod +x /tmp/refresh_dotfiles.sh
+
+while true; do
+  echo "======================================================"
+  echo "Press Enter to run dotfiles refresh, or Ctrl+C to exit"
+  echo "======================================================"
+  read -r
+  /tmp/refresh_dotfiles.sh
+done
+EOT
 }
 
 output "dotfiles_uri" {
