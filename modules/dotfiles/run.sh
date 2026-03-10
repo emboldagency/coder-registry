@@ -150,7 +150,7 @@ LOG_FILE="$HOME/.dotfiles.log"
           echo "Pre-stow cleanup: Removing conflicts from $target..."
           while IFS= read -r -d '' file; do
             # Get the relative path from the package root
-            rel_path="${file#$stow_target_dir/$origin/}"
+            rel_path="$${file#$stow_target_dir/$origin/}"
             target_path="$target/$rel_path"
             
             # Remove if it exists (file, symlink, or directory)
