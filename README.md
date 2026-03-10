@@ -1,6 +1,6 @@
 # Embold Coder Registry
 
-![Calendar Semantic Versioning](https://embold.net/api/github/badge/calsemver.php?repo=coder-registry)
+[![Calendar Semantic Versioning](https://embold.net/api/github/badge/calsemver.php?repo=coder-registry)](https://github.com/emboldagency/coder-registry/releases)
 
 A centralized collection of Terraform modules used for provisioning and configuring Coder workspaces at Embold.
 
