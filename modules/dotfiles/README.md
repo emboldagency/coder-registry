@@ -15,7 +15,8 @@ A comprehensive Coder module that clones a dotfiles repository and applies them 
   - Each item may be `origin` (e.g. `dotfiles`) or `origin:target` (e.g. `home:dotfiles` or `dotfiles:/etc/skel`).
   - If omitted, the module will auto-detect `dotfiles/` and/or `home/` subdirs in the repo.
   - If omitted, the module also exposes a workspace parameter named `Dotfiles Packages`.
-- `stow_preserve_changes` (bool, optional) - If `true` (default), changes created by `stow --adopt` are stashed to preserve local edits.
+- `stow_preserve_changes` (bool, optional) - If `true` (default), changes created by stow are stashed to preserve local edits.
+- `manual_update` (bool, optional) - If `true`, adds a "Refresh Dotfiles" button to the workspace page for on-demand updates. Default: `false`.
 
 ## Usage
 
@@ -31,6 +32,7 @@ module "link_dotfiles" {
   # user                  = "root"
   # packages              = "dotfiles home:dotfiles"
   # stow_preserve_changes = true
+  # manual_update         = true  # Adds "Refresh Dotfiles" button to workspace
 }
 ```
 
@@ -42,9 +44,34 @@ module "link_dotfiles" {
   3. **Link**: Applies the files using the selected `mode`.
 - **User Context**: If the `user` input is provided (and differs from the current user), the script utilizes `sudo` to execute the entire clone and link process as that target user.
 - **Stow Strategy**:
-  - When `MODE=symlink` and GNU `stow` is available, it uses `stow --adopt` to claim existing files.
-  - It then immediately stashes the changes created by adoption (if `stow_preserve_changes` is true), effectively "peeling" the local file version off into a stash while leaving the symlink to the repo version in place.
+  - When `MODE=symlink` and GNU `stow` is available, it uses `stow` to create symlinks.
+  - **Conflict Handling**: Before stow runs, the script removes any existing files/symlinks that would be managed by the new packages. This allows seamless upgrades from older setups where dotfiles were installed using different methods.
+  - If `stow_preserve_changes` is true, any changes created during the process are stashed to preserve local edits.
 - **Auto-Detection**: When `packages` is not provided, the module prefers `dotfiles/` or `home/` subdirectories inside the repo before falling back to the repo root.
+- **Manual Update Button**: When `manual_update = true`, a "Refresh Dotfiles" button appears in the workspace UI. Clicking it re-runs the entire dotfiles process (git pull + stow). The command runs once and exits cleanly—the output window will close automatically when complete.
+- **Security**: The dotfiles URI is validated to prevent command injection attacks. Only valid git repository URLs are accepted.
+
+## Troubleshooting
+
+### Stow Conflicts During Upgrade
+
+**Issue**: Stow fails with messages like "existing target is not owned by stow" or "Absolute/relative mismatch"
+
+**Cause**: This typically occurs when upgrading from an older Coder version where dotfiles were installed using a different method.
+
+**Solution**:
+1. Check the dotfiles log: `cat $HOME/.dotfiles.log`
+2. Identify which files are conflicting (listed in the stow error)
+3. Manually remove them:
+   ```bash
+   rm -f ~/.zshrc ~/.zshenv ~/.vimrc ~/.config/antidote/embold_plugins.zsh
+   rm -f ~/.local/share/code-server/User/settings.json
+   ```
+4. Re-run the dotfiles link step:
+   - Via Coder: Go to workspace creation and re-enable the dotfiles module
+   - Or manually (if symlink mode): `cd ~/.config/coderv2/dotfiles && stow -t $HOME dotfiles`
+
+The pre-stow cleanup should prevent this on fresh setups, but manual intervention may be needed if conflicts arise due to local edits.
 
 ## Publishing
 

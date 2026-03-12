@@ -13,6 +13,22 @@ DOTFILES_USER="${DOTFILES_USER}"
 STOW_PRESERVE="${PRESERVE_STASH}"
 
 # ------------------------------------------------------------------------------
+# URI Validation (Defense in Depth)
+# ------------------------------------------------------------------------------
+if [ -n "$DOTFILES_URL" ]; then
+  # Check for invalid characters that could indicate command injection
+  if [[ "$DOTFILES_URL" =~ [^a-zA-Z0-9._/:@-] ]]; then
+    echo "ERROR: DOTFILES_URI contains invalid characters" >&2
+    exit 1
+  fi
+  # Ensure it's a valid repository URL format
+  if ! [[ "$DOTFILES_URL" =~ ^(https?://|ssh://|git@|git://) ]]; then
+    echo "ERROR: DOTFILES_URI must be a valid repository URL (https://, http://, ssh://, git@, or git://)" >&2
+    exit 1
+  fi
+fi
+
+# ------------------------------------------------------------------------------
 # User Switching Logic
 # ------------------------------------------------------------------------------
 
@@ -128,13 +144,44 @@ LOG_FILE="$HOME/.dotfiles.log"
           target="$HOME"
         fi
 
-        echo "Stowing package '$origin' -> '$target' (with --adopt)"
-        (cd "$stow_target_dir" && stow -v --adopt -t "$target" "$origin") || true
+        # Pre-stow cleanup: Remove conflicting files/symlinks that exist in target
+        # This handles upgrades from older setups where files may already exist
+        if [ -d "$stow_target_dir/$origin" ]; then
+          echo "Pre-stow cleanup: Removing conflicts from $target..."
+          while IFS= read -r -d '' file; do
+            # Get the relative path from the package root
+            rel_path="$${file#$stow_target_dir/$origin/}"
+            target_path="$target/$rel_path"
+            
+            # Remove if it exists (file, symlink, or directory)
+            if [ -L "$target_path" ] || [ -f "$target_path" ]; then
+              echo "  Removing: $target_path"
+              rm -f "$target_path"
+            elif [ -d "$target_path" ] && [ -L "$target_path" ]; then
+              echo "  Removing symlinked dir: $target_path"
+              rm -rf "$target_path"
+            fi
+          done < <(find "$stow_target_dir/$origin" -type f -print0)
+        fi
+
+        echo "Stowing package '$origin' -> '$target'"
+        if ! (cd "$stow_target_dir" && stow -v -t "$target" "$origin"); then
+          echo ""
+          echo "⚠️ Stow encountered conflicts. This may happen if:"
+          echo "  • Files were created from an older dotfiles version"
+          echo "  • Manual edits in $target conflict with repo files"
+          echo ""
+          echo "To resolve:"
+          echo "  1. Check the log: cat $LOG_FILE"
+          echo "  2. Remove conflicting files manually: rm -f <file1> <file2> ..."
+          echo "  3. Or re-run the dotfiles link process by restarting the workspace."
+          echo ""
+        fi
 
         if [ "$STOW_PRESERVE" = "true" ] && [ -d "$stow_target_dir/.git" ]; then
           if [ -n "$(cd "$stow_target_dir" && git status --porcelain --untracked-files=all 2>/dev/null || true)" ]; then
             post_stow_stash="stow-adopt-$(date -u +%Y%m%dT%H%M%SZ)"
-            echo "Stashing changes created by stow adoption to '$post_stow_stash'"
+            echo "Stashing changes created by stow to '$post_stow_stash'"
             (cd "$stow_target_dir" && git stash push --include-untracked -m "$post_stow_stash") || true
           fi
         fi

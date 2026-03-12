@@ -58,3 +58,9 @@ variable "user" {
   description = "The name of the user to apply the dotfiles to. (optional, applies to the current user by default)"
   default     = null
 }
+
+variable "manual_update" {
+  type        = bool
+  description = "If true, adds a button to the workspace page to refresh dotfiles on demand."
+  default     = false
+}

@@ -75,6 +75,35 @@ resource "coder_script" "link_dotfiles" {
   })
 }
 
+resource "coder_app" "dotfiles" {
+  count        = var.manual_update ? 1 : 0
+  agent_id     = var.agent_id
+  display_name = "Refresh Dotfiles"
+  slug         = "dotfiles"
+  icon         = "/icon/dotfiles.svg"
+  order        = var.order
+  command      = <<EOT
+cat <<'EOF' > /tmp/refresh_dotfiles.sh
+${templatefile("${path.module}/run.sh", {
+    DOTFILES_URI   = local.dotfiles_uri,
+    MODE           = local.resolved_mode,
+    PACKAGES       = local.resolved_packages,
+    PRESERVE_STASH = tostring(var.stow_preserve_changes),
+    DOTFILES_USER  = local.user
+  })}
+EOF
+chmod +x /tmp/refresh_dotfiles.sh
+
+while true; do
+  echo "======================================================"
+  echo "Press Enter to run dotfiles refresh, or Ctrl+C to exit"
+  echo "======================================================"
+  read -r
+  /tmp/refresh_dotfiles.sh
+done
+EOT
+}
+
 output "dotfiles_uri" {
   description = "Dotfiles URI"
   value       = local.dotfiles_uri
