@@ -82,15 +82,15 @@ resource "coder_app" "dotfiles" {
   slug         = "dotfiles"
   icon         = "/icon/dotfiles.svg"
   order        = var.order
-  command      = <<EOT
+  command = <<EOT
 cat <<'EOF' > /tmp/refresh_dotfiles.sh
 ${templatefile("${path.module}/run.sh", {
-    DOTFILES_URI   = local.dotfiles_uri,
-    MODE           = local.resolved_mode,
-    PACKAGES       = local.resolved_packages,
-    PRESERVE_STASH = tostring(var.stow_preserve_changes),
-    DOTFILES_USER  = local.user
-  })}
+  DOTFILES_URI   = local.dotfiles_uri,
+  MODE           = local.resolved_mode,
+  PACKAGES       = local.resolved_packages,
+  PRESERVE_STASH = tostring(var.stow_preserve_changes),
+  DOTFILES_USER  = local.user
+})}
 EOF
 chmod +x /tmp/refresh_dotfiles.sh
 
