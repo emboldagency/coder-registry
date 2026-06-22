@@ -13,6 +13,67 @@ DOTFILES_USER="${DOTFILES_USER}"
 STOW_PRESERVE="${PRESERVE_STASH}"
 
 # ------------------------------------------------------------------------------
+# Vault Fallback: resolve the dotfiles URL per-user from Vault
+# ------------------------------------------------------------------------------
+# When no URL was provided (no override var and an empty parameter), look it up
+# in Vault at secret/users/<namespace>/dotfiles. The namespace is derived from
+# the workspace token's own `user-*` policy, NOT $CODER_USERNAME, because the
+# Coder username can differ from the Vault namespace (e.g. coder "xan" -> vault
+# "xander"); the policy is the only identifier guaranteed to match the path the
+# token can actually read. This runs before any user switch so it executes as
+# the agent user that holds the ~/.vault-token cached by the vault-github
+# module. Every failure is non-fatal — we fall through to the normal "no URL"
+# skip, so a sealed/unreachable Vault never breaks workspace startup.
+
+resolve_dotfiles_uri_from_vault() {
+  command -v vault >/dev/null 2>&1 || { echo "vault CLI not found; skipping Vault lookup" >&2; return 1; }
+  [ -n "$${VAULT_ADDR:-}" ] || { echo "VAULT_ADDR unset; skipping Vault lookup" >&2; return 1; }
+
+  # vault-github authenticates in a parallel startup script; wait (bounded) for
+  # it to cache a usable token before we read.
+  local i=0
+  while [ "$i" -lt 30 ]; do
+    if vault token lookup >/dev/null 2>&1; then break; fi
+    i=$((i + 1))
+    sleep 1
+  done
+  if ! vault token lookup >/dev/null 2>&1; then
+    echo "Vault token unavailable (sealed/unreachable?); skipping Vault lookup" >&2
+    return 1
+  fi
+
+  # Derive the namespace from the token's user-* policy. Force table output so
+  # parsing is unaffected by a global VAULT_FORMAT=json.
+  local ns
+  ns=$(VAULT_FORMAT=table vault token lookup 2>/dev/null \
+    | sed -n 's/^policies[[:space:]]*\[\(.*\)\]$/\1/p' \
+    | tr -s ' ' '\n' \
+    | sed -n 's/^user-//p' \
+    | head -n1)
+  if [ -z "$ns" ]; then
+    echo "No user-* policy on token; cannot determine Vault namespace; skipping" >&2
+    return 1
+  fi
+
+  local url
+  url=$(vault kv get -field=url "secret/users/$ns/dotfiles" 2>/dev/null || true)
+  if [ -z "$url" ]; then
+    echo "No dotfiles URL at secret/users/$ns/dotfiles; skipping" >&2
+    return 1
+  fi
+
+  printf '%s' "$url"
+}
+
+if [ -z "$DOTFILES_URL" ]; then
+  echo "No dotfiles URL provided; attempting Vault lookup..."
+  if vault_url=$(resolve_dotfiles_uri_from_vault); then
+    DOTFILES_URL="$vault_url"
+    echo "Resolved dotfiles URL from Vault."
+  fi
+fi
+
+# ------------------------------------------------------------------------------
 # URI Validation (Defense in Depth)
 # ------------------------------------------------------------------------------
 if [ -n "$DOTFILES_URL" ]; then
