@@ -9,7 +9,7 @@ terraform {
 resource "coder_script" "gem_setup" {
   agent_id           = var.agent_id
   display_name       = "Home Seeding and Gem Setup"
-  icon               = "https://api.embold.net/icons/?name=fas-house.svg&color=009dff"
+  icon               = "https://api.embold.net/icons/fas-house.svg"
   run_on_start       = true
   start_blocks_login = true
   script = templatefile("${path.module}/run.sh", {

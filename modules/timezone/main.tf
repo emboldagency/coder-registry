@@ -10,7 +10,7 @@ data "coder_parameter" "timezone" {
   count       = var.timezone == null ? 1 : 0
   name        = "Timezone"
   description = "Set the container timezone for the workspace."
-  icon        = "https://api.embold.net/icons/?name=fas-clock.svg&color=009dff"
+  icon        = "https://api.embold.net/icons/fas-clock.svg"
   type        = "string"
   default     = "America/New_York"
   mutable     = true
@@ -37,7 +37,7 @@ resource "coder_script" "timezone" {
   # workspace parameter so end-users can change it at runtime.
   script             = templatefile("${path.module}/run.sh", { TIMEZONE = local.resolved_timezone })
   display_name       = "Timezone"
-  icon               = "https://api.embold.net/icons/?name=fas-clock.svg&color=009dff"
+  icon               = "https://api.embold.net/icons/fas-clock.svg"
   run_on_start       = true
   start_blocks_login = false
 }

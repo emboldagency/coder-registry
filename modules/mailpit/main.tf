@@ -106,7 +106,7 @@ resource "coder_app" "mailpit" {
   url          = "http://localhost:18025"
   share        = "authenticated"
   subdomain    = true
-  icon         = "https://api.embold.net/icons/?name=mailpit.svg"
+  icon         = "https://api.embold.net/icons/mailpit.svg"
   order        = 3
 
   healthcheck {
@@ -120,7 +120,7 @@ resource "coder_script" "mailpit_reverse_proxy" {
   agent_id           = var.agent_id
   script             = templatefile("${path.module}/run.sh", { PROXY_LINE = join(" ", var.proxy_mappings) })
   display_name       = "Reverse Proxy"
-  icon               = "https://api.embold.net/icons/?name=socat.svg"
+  icon               = "https://api.embold.net/icons/socat.svg"
   run_on_start       = true
   start_blocks_login = true
 }
