@@ -15,15 +15,9 @@ STOW_PRESERVE="${PRESERVE_STASH}"
 # ------------------------------------------------------------------------------
 # Vault Fallback: resolve the dotfiles URL per-user from Vault
 # ------------------------------------------------------------------------------
-# When no URL was provided (no override var and an empty parameter), look it up
-# in Vault at secret/users/<namespace>/dotfiles. The namespace is derived from
-# the token's own entity metadata (vault_user), NOT $CODER_USERNAME, because the
-# Coder username can differ from the Vault namespace (e.g. coder "xan" -> vault
-# "xander"); vault_user is what the user-self policy templates on, so it always
-# matches the path the token can actually read. This runs before any user switch so it executes as
-# the agent user that holds the ~/.vault-token cached by the vault-github
-# module. Every failure is non-fatal — we fall through to the normal "no URL"
-# skip, so a sealed/unreachable Vault never breaks workspace startup.
+# Namespace comes from the token's vault_user entity metadata, NOT $CODER_USERNAME
+# (coder "xan" -> vault "xander"). Runs pre-user-switch, while the vault-github
+# module's ~/.vault-token is still readable.
 
 resolve_dotfiles_uri_from_vault() {
   command -v vault >/dev/null 2>&1 || { echo "vault CLI not found; skipping Vault lookup" >&2; return 1; }
@@ -80,10 +74,17 @@ resolve_dotfiles_uri_from_vault() {
 }
 
 if [ -z "$DOTFILES_URL" ]; then
-  echo "No dotfiles URL provided; attempting Vault lookup..."
-  if vault_url=$(resolve_dotfiles_uri_from_vault); then
-    DOTFILES_URL="$vault_url"
-    echo "Resolved dotfiles URL from Vault."
+  # $$ escapes the Coder secret's real runtime env var from templatefile,
+  # distinct from the Terraform-time DOTFILES_URI substituted above.
+  if [ -n "$${DOTFILES_URI:-}" ]; then
+    DOTFILES_URL="$${DOTFILES_URI}"
+    echo "Dotfiles URL resolved from env: $DOTFILES_URL"
+  else
+    echo "No dotfiles URL provided; attempting Vault lookup..."
+    if vault_url=$(resolve_dotfiles_uri_from_vault); then
+      DOTFILES_URL="$vault_url"
+      echo "Resolved dotfiles URL from Vault."
+    fi
   fi
 fi
 
