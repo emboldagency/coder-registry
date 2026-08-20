@@ -62,7 +62,7 @@ locals {
 
 resource "coder_script" "link_dotfiles" {
   agent_id           = var.agent_id
-  display_name       = "Link Dotfiles"
+  display_name       = "Dotfiles"
   icon               = "/icon/dotfiles.svg"
   run_on_start       = true
   start_blocks_login = false
