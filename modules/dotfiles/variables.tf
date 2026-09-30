@@ -26,7 +26,7 @@ variable "parameter_order" {
 variable "description" {
   type        = string
   description = "A custom description for the dotfiles parameter. This is shown in the UI - and allows you to customize the instructions you give to your users."
-  default     = "Optional. Enter a [dotfiles repository](https://dotfiles.github.io) URL to personalize your workspace. Leave blank to use the URL stored for you in Vault (secret/users/<you>/dotfiles), if configured."
+  default     = "Optional. Enter a [dotfiles repository](https://dotfiles.github.io) URL to personalize your workspace. Leave blank to use your DOTFILES_URI Coder secret, if set."
 }
 
 
