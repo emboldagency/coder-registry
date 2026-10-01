@@ -7,7 +7,7 @@ A comprehensive Coder module that clones a dotfiles repository and applies them 
 ## Inputs
 
 - `agent_id` (string) - The ID of the Coder agent.
-- `dotfiles_uri` (string, optional) - The URL of the dotfiles repository. If left empty (no override variable and a blank parameter), the module attempts to resolve the URL from Vault — see [Vault fallback](#vault-fallback).
+- `dotfiles_uri` (string, optional) - The URL of the dotfiles repository. If left empty (no override variable and a blank parameter), the module falls back to the `DOTFILES_URI` environment variable. See [Coder secret fallback](#coder-secret-fallback).
 - `user` (string, optional) - The user to apply dotfiles to. Defaults to the current user. If set to a different user, `sudo` will be used.
 - `mode` (string, optional) - One of `symlink`, `copy`, or `none`.
   - If unset, the module will create a workspace parameter named `Dotfiles Mode` so end-users can choose behavior at runtime.
@@ -51,20 +51,12 @@ module "link_dotfiles" {
 - **Manual Update Button**: When `manual_update = true`, a "Refresh Dotfiles" button appears in the workspace UI. Clicking it re-runs the entire dotfiles process (git pull + stow). The command runs once and exits cleanly—the output window will close automatically when complete.
 - **Security**: The dotfiles URI is validated to prevent command injection attacks. Only valid git repository URLs are accepted.
 
-## Vault fallback
+## Coder secret fallback
 
-When no URL is supplied (the `dotfiles_uri` variable is unset/empty **and** the `Dotfiles URL` parameter is left blank), the module looks the URL up in Vault at `secret/users/<namespace>/dotfiles` (field `url`). This lets each user store their dotfiles repo once in their personal Vault namespace instead of typing it per workspace.
+When no URL is supplied (the `dotfiles_uri` variable is unset or empty **and** the `Dotfiles URL` parameter is left blank), the module reads the `DOTFILES_URI` environment variable at runtime. Set it once as a Coder user secret named `DOTFILES_URI` and every workspace picks it up.
 
-- **Requires** the [`vault-github`](https://registry.coder.com/modules/coder/vault-github) module on the same agent, which sets `VAULT_ADDR` and authenticates the workspace. The lookup runs before any `user` switch so it uses the agent user's cached `~/.vault-token`.
-- **Namespace resolution**: the namespace is derived from the workspace token's own `user-*` policy — **not** `$CODER_USERNAME` — because a user's Coder username can differ from their Vault namespace (e.g. coder `xan` → vault `xander`). The token can only read its own policy-granted path, so this is the only identifier guaranteed to line up.
-- **Precedence**: explicit `dotfiles_uri` / a non-blank parameter always wins; Vault is only consulted when both are empty.
-- **Non-fatal**: if `vault` is absent, `VAULT_ADDR` is unset, the token never becomes available (Vault sealed/unreachable), or no entry exists, the module logs the reason and falls through to its normal "no URL" skip. A Vault outage never fails workspace startup.
-
-Seed an entry with:
-
-```bash
-vault kv put secret/users/<namespace>/dotfiles url=git@github.com:<owner>/dotfiles.git
-```
+- **Precedence**: an explicit `dotfiles_uri` or a non-blank parameter always wins. The env var is only consulted when both are empty.
+- **Non-fatal**: if `DOTFILES_URI` is also unset, the module logs that no URL was provided and skips the clone. A missing URL never fails workspace startup.
 
 ## Troubleshooting
 

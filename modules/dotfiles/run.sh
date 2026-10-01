@@ -12,79 +12,12 @@ PACKAGES="${PACKAGES}"
 DOTFILES_USER="${DOTFILES_USER}"
 STOW_PRESERVE="${PRESERVE_STASH}"
 
-# ------------------------------------------------------------------------------
-# Vault Fallback: resolve the dotfiles URL per-user from Vault
-# ------------------------------------------------------------------------------
-# Namespace comes from the token's vault_user entity metadata, NOT $CODER_USERNAME
-# (coder "xan" -> vault "xander"). Runs pre-user-switch, while the vault-github
-# module's ~/.vault-token is still readable.
-
-resolve_dotfiles_uri_from_vault() {
-  command -v vault >/dev/null 2>&1 || { echo "vault CLI not found; skipping Vault lookup" >&2; return 1; }
-  [ -n "$${VAULT_ADDR:-}" ] || { echo "VAULT_ADDR unset; skipping Vault lookup" >&2; return 1; }
-
-  # vault-github authenticates in a parallel startup script; wait (bounded) for
-  # it to cache a usable token before we read.
-  local i=0
-  while [ "$i" -lt 30 ]; do
-    if vault token lookup >/dev/null 2>&1; then break; fi
-    i=$((i + 1))
-    sleep 1
-  done
-  if ! vault token lookup >/dev/null 2>&1; then
-    echo "Vault token unavailable (sealed/unreachable?); skipping Vault lookup" >&2
-    return 1
-  fi
-
-  # Derive the namespace from the token's entity metadata (vault_user), which is
-  # what the shared user-self policy templates on. The user-self ACL grants each
-  # token read on its OWN identity/entity/id/<id>, so this works unprivileged.
-  local ns entity_id
-  entity_id=$(VAULT_FORMAT=table vault token lookup 2>/dev/null \
-    | sed -n 's/^entity_id[[:space:]]*//p' | head -n1)
-  if [ -n "$entity_id" ]; then
-    ns=$(vault read -format=json "identity/entity/id/$entity_id" 2>/dev/null \
-      | sed -n 's/.*"vault_user"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)
-  fi
-
-  # Fallback for tokens predating the user-self migration: a legacy per-user
-  # user-<name> policy on the token (user-self itself is not a name).
-  if [ -z "$ns" ]; then
-    ns=$(VAULT_FORMAT=table vault token lookup 2>/dev/null \
-      | sed -n 's/^policies[[:space:]]*\[\(.*\)\]$/\1/p' \
-      | tr -s ' ' '\n' \
-      | sed -n 's/^user-//p' \
-      | grep -vx self \
-      | head -n1)
-  fi
-
-  if [ -z "$ns" ]; then
-    echo "Cannot determine Vault user namespace (no entity vault_user metadata or user-* policy); skipping" >&2
-    return 1
-  fi
-
-  local url
-  url=$(vault kv get -field=url "secret/users/$ns/dotfiles" 2>/dev/null || true)
-  if [ -z "$url" ]; then
-    echo "No dotfiles URL at secret/users/$ns/dotfiles; skipping" >&2
-    return 1
-  fi
-
-  printf '%s' "$url"
-}
-
 if [ -z "$DOTFILES_URL" ]; then
   # $$ escapes the Coder secret's real runtime env var from templatefile,
   # distinct from the Terraform-time DOTFILES_URI substituted above.
   if [ -n "$${DOTFILES_URI:-}" ]; then
     DOTFILES_URL="$${DOTFILES_URI}"
     echo "Dotfiles URL resolved from env: $DOTFILES_URL"
-  else
-    echo "No dotfiles URL provided; attempting Vault lookup..."
-    if vault_url=$(resolve_dotfiles_uri_from_vault); then
-      DOTFILES_URL="$vault_url"
-      echo "Resolved dotfiles URL from Vault."
-    fi
   fi
 fi
 
